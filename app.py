@@ -384,6 +384,68 @@ def main():
         
         st.markdown('</div>', unsafe_allow_html=True) # Close result-section div
 
+    st.write("---") # Separator before new section
+
+    # --- New Section: Tax Saving & Investment Insights ---
+    st.markdown('<div class="input-section">', unsafe_allow_html=True) # Reusing input-section style
+    st.markdown('<h2><center>💡 Tax Saving & Investment Insights</center></h2>', unsafe_allow_html=True)
+
+    with st.expander("Common Tax Saving Sections"):
+        st.markdown("""
+        The Indian Income Tax Act offers various sections under which you can claim deductions to reduce your taxable income. Here are some of the most common ones:
+
+        * **Section 80C (Max ₹1,50,000):** This is one of the most popular sections. Investments and expenses covered include:
+            * Provident Fund (PF) / Employee Provident Fund (EPF)
+            * Public Provident Fund (PPF)
+            * Life Insurance Premiums
+            * Equity Linked Savings Schemes (ELSS) - Mutual Funds
+            * Home Loan Principal Repayment
+            * Children's Tuition Fees (up to 2 children)
+            * Fixed Deposits (5-year tax-saving FDs)
+            * National Savings Certificate (NSC)
+            * Sukanya Samriddhi Yojana (SSY)
+        * **Section 80D (Health Insurance):** Deductions for health insurance premiums for yourself, spouse, dependent children, and parents. Limits vary based on age (senior citizens get higher limits).
+        * **Section 80CCD(1B) (NPS):** An additional deduction of up to ₹50,000 for contributions to the National Pension System (NPS), over and above the 80C limit.
+        * **Section 24(b) (Home Loan Interest):** Deduction for interest paid on housing loans (up to ₹2,00,000 for self-occupied property).
+        * **Section 80G (Donations):** Deductions for donations to certain approved charitable institutions.
+        * **Section 80EEA (Affordable Housing Loan Interest):** Additional deduction for interest on housing loans for affordable housing, over and above Section 24(b) (conditions apply).
+
+        *Note: The New Tax Regime generally does not allow these deductions, except for the Standard Deduction for salaried individuals and employer's contribution to NPS.*
+        """)
+
+    with st.expander("Popular Tax-Saving Investment Options"):
+        st.markdown("""
+        Investing in tax-saving instruments not only helps you save tax but also aids in wealth creation.
+
+        * **Equity Linked Savings Schemes (ELSS):**
+            * **Type:** Mutual Funds (Equity)
+            * **Lock-in:** 3 years (shortest among 80C options)
+            * **Potential:** High growth potential, market-linked returns.
+            * **Suitability:** For investors with a moderate to high-risk appetite.
+        * **Public Provident Fund (PPF):**
+            * **Type:** Government-backed savings scheme
+            * **Lock-in:** 15 years (with partial withdrawals allowed after 7 years)
+            * **Potential:** Guaranteed, tax-free returns, low risk.
+            * **Suitability:** For conservative investors seeking long-term, safe growth.
+        * **National Pension System (NPS):**
+            * **Type:** Retirement savings scheme
+            * **Lock-in:** Until retirement (age 60)
+            * **Potential:** Market-linked returns, dual tax benefits (80C and 80CCD(1B)).
+            * **Suitability:** For long-term retirement planning, moderate risk.
+        * **Tax-Saving Fixed Deposits (FDs):**
+            * **Type:** Bank Fixed Deposits
+            * **Lock-in:** 5 years
+            * **Potential:** Guaranteed returns, low risk.
+            * **Suitability:** For conservative investors preferring fixed returns.
+        * **Life Insurance Policies:**
+            * **Type:** Various plans (Term, Endowment, ULIPs)
+            * **Lock-in:** Varies by policy
+            * **Potential:** Provides life cover; returns vary (ULIPs are market-linked).
+            * **Suitability:** For financial protection and long-term savings.
+
+        **Always consider your financial goals, risk tolerance, and liquidity needs before choosing any investment option.**
+        """)
+    st.markdown('</div>', unsafe_allow_html=True) # Close input-section div
 
     # --- Disclaimer ---
     st.markdown(
