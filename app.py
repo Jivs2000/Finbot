@@ -52,12 +52,34 @@ def calculate_tax_old_regime(income, age_group, deductions):
     This is a simplified version and does NOT include all possible deductions.
     """
     # Apply deductions for Old Regime
-    # For simplicity, we'll only consider a basic 80C deduction here.
-    # A full calculator would need many more deduction fields (80D, HRA, etc.)
+    total_deductions = 0
+
+    # Section 80C
     max_80c_deduction = 150000
-    deduction_80c = min(deductions.get('80C', 0), max_80c_deduction)
-    
-    taxable_income = max(0, income - deduction_80c)
+    total_deductions += min(deductions.get('80C', 0), max_80c_deduction)
+
+    # Section 80D (Health Insurance) - Simplified Max
+    max_80d_deduction = 25000 # For general
+    if age_group in ["60 to 80 years", "Above 80 years"]:
+        max_80d_deduction = 50000 # For senior citizens
+    total_deductions += min(deductions.get('80D', 0), max_80d_deduction)
+
+    # Section 80CCD(1B) (NPS)
+    max_80ccd1b_deduction = 50000
+    total_deductions += min(deductions.get('80CCD(1B)', 0), max_80ccd1b_deduction)
+
+    # Section 24(b) (Home Loan Interest)
+    max_24b_deduction = 200000
+    total_deductions += min(deductions.get('24b_interest', 0), max_24b_deduction)
+
+    # Combine all income sources for total taxable income
+    # Note: For simplicity, assuming these are added to the 'annual_income'
+    # In a real scenario, income from sources like house property, capital gains, PGBP
+    # would be calculated separately and then aggregated to Gross Total Income (GTI)
+    # before applying Chapter VI-A deductions.
+    # Here, 'income' is treated as Gross Total Income for deduction purposes.
+
+    taxable_income = max(0, income - total_deductions)
 
     tax = 0
     if age_group == "Below 60 years":
@@ -135,11 +157,11 @@ def main():
         }
 
         .stApp {
-            background: linear-gradient(to bottom right, #E8F5E9, #DCEDC8); /* Light Greenish-Blue Gradient */
+            background: linear-gradient(to bottom right, #E0F7FA, #E1BEE7); /* Light Cyan to Light Purple Gradient */
         }
 
         .header-container {
-            background: linear-gradient(to right, #388E3C, #689F38); /* Dark Green to Olive Green Gradient */
+            background: linear-gradient(to right, #00BCD4, #9C27B0); /* Cyan to Deep Purple Gradient */
             padding: 20px 0;
             border-radius: 15px;
             margin-bottom: 2em;
@@ -156,7 +178,7 @@ def main():
         }
         .header-subtitle {
             font-size: 1.4em;
-            color: #DCEDC8; /* Lighter green for subtitle */
+            color: #E0F7FA; /* Lighter cyan for subtitle */
             text-align: center;
             margin-bottom: 0;
         }
@@ -170,8 +192,8 @@ def main():
         .stNumberInput > div > div > input {
             border-radius: 10px;
             padding: 10px 15px;
-            border: 1px solid #C8E6C9; /* Light green border */
-            box-shadow: inset 2px 2px 5px #A5D6A7, inset -5px -5px 10px #FFFFFF;
+            border: 1px solid #B2EBF2; /* Light cyan border */
+            box-shadow: inset 2px 2px 5px #80DEEA, inset -5px -5px 10px #FFFFFF;
         }
         .stRadio > label {
             font-weight: 600; /* Semi-bold */
@@ -188,7 +210,7 @@ def main():
         .stButton button {
             border-radius: 25px; /* More rounded */
             padding: 12px 25px;
-            background: linear-gradient(to right, #388E3C, #689F38); /* Match header button gradient */
+            background: linear-gradient(to right, #00BCD4, #9C27B0); /* Match header button gradient */
             color: white;
             border: none;
             font-weight: bold;
@@ -199,13 +221,13 @@ def main():
             transition: all 0.3s ease;
         }
         .stButton button:hover {
-            background: linear-gradient(to right, #2E7D32, #558B2F); /* Darker gradient on hover */
+            background: linear-gradient(to right, #00ACC1, #8E24AA); /* Darker gradient on hover */
             transform: translateY(-2px); /* Slight lift effect */
             box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
         }
         .result-box {
-            background-color: #E8F5E9; /* Very light green */
-            border-left: 6px solid #388E3C; /* Stronger green border */
+            background-color: #E0F7FA; /* Very light cyan */
+            border-left: 6px solid #00BCD4; /* Stronger cyan border */
             padding: 25px;
             border-radius: 10px;
             margin-top: 30px;
@@ -213,12 +235,12 @@ def main():
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .result-box h3 {
-            color: #388E3C; /* Dark green */
+            color: #00BCD4; /* Cyan */
             margin-top: 0;
             font-weight: 700;
         }
         .stMetric {
-            background-color: #F1F8E9; /* Lighter greenish background for metric */
+            background-color: #F3F8FA; /* Lighter cyan background for metric */
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -233,7 +255,7 @@ def main():
         .stMetric > div > div > div:last-child { /* Metric value */
             font-size: 2.5em;
             font-weight: bold;
-            color: #388E3C; /* Dark green */
+            color: #00BCD4; /* Cyan */
         }
         .disclaimer {
             font-size: 0.85em;
@@ -263,7 +285,7 @@ def main():
         st.subheader("Your Income Details")
 
         annual_income = st.number_input(
-            "Enter your Annual Income (₹)",
+            "Enter your Total Annual Income (₹) (Sum of all income sources)", # Clarified input
             min_value=0,
             value=750000, # Default value
             step=10000,
@@ -289,18 +311,29 @@ def main():
                 index=0,
                 key="age_group_radio" # Added key for reset
             )
-            with st.expander("Add Common Deductions (Old Regime - Simplified)"):
-                deductions['80C'] = st.number_input(
-                    "Deduction under Section 80C (Max ₹1,50,000 for investments like PPF, ELSS, EPF, Home Loan Principal, Life Insurance Premium, etc.)",
-                    min_value=0,
-                    max_value=150000,
-                    value=0,
-                    step=1000,
-                    format="%d",
-                    key="deduction_80c_input" # Added key for reset
-                )
-                # You would add more deduction fields here for a comprehensive Old Regime calculator
-                # e.g., st.number_input("Deduction under Section 80D (Health Insurance)", ...)
+            
+            st.subheader("Detailed Deductions (Old Regime)")
+            st.markdown("*(Enter amounts for applicable deductions. Max limits apply.)*")
+
+            deductions['80C'] = st.number_input(
+                "Deduction u/s 80C (Max ₹1,50,000)",
+                min_value=0, max_value=150000, value=0, step=1000, format="%d", key="deduction_80c_input"
+            )
+            deductions['80D'] = st.number_input(
+                "Deduction u/s 80D (Health Insurance - Max ₹25k/50k)",
+                min_value=0, max_value=50000, value=0, step=1000, format="%d", key="deduction_80d_input"
+            )
+            deductions['80CCD(1B)'] = st.number_input(
+                "Deduction u/s 80CCD(1B) (NPS - Max ₹50,000)",
+                min_value=0, max_value=50000, value=0, step=1000, format="%d", key="deduction_80ccd1b_input"
+            )
+            deductions['24b_interest'] = st.number_input(
+                "Deduction u/s 24(b) (Home Loan Interest - Max ₹2,00,000)",
+                min_value=0, max_value=200000, value=0, step=1000, format="%d", key="deduction_24b_input"
+            )
+            # Add more common deductions here if needed, e.g., 80E, 80G, etc.
+            # For this simplified calculator, we'll stick to a few key ones.
+
         st.markdown('</div>', unsafe_allow_html=True) # Close input-section div
 
     col1, col2 = st.columns(2)
@@ -316,11 +349,22 @@ def main():
                 gross_tax_initial = calculate_tax_new_regime(annual_income)
                 # Rebate is already handled inside calculate_tax_new_regime, but for display clarity:
                 if annual_income <= 700000:
-                    rebate_amount = min(gross_tax_initial + 50000, 25000) # Rebate based on income before SD
-                    # Gross tax for surcharge/cess is after rebate
-                    gross_tax = max(0, gross_tax_initial) # gross_tax_initial already has rebate applied
+                    # The rebate calculation needs to consider the tax *before* it's zeroed out by the rebate
+                    # The calculate_tax_new_regime returns the final tax after rebate.
+                    # To show the rebate amount, we need to re-calculate tax without rebate first.
+                    temp_tax_without_rebate = 0
+                    temp_taxable_income = max(0, annual_income - 50000) # Apply standard deduction
+                    if temp_taxable_income <= 300000: temp_tax_without_rebate = 0
+                    elif temp_taxable_income <= 600000: temp_tax_without_rebate = (temp_taxable_income - 300000) * 0.05
+                    elif temp_taxable_income <= 900000: temp_tax_without_rebate = (300000 * 0.05) + (temp_taxable_income - 600000) * 0.10
+                    elif temp_taxable_income <= 1200000: temp_tax_without_rebate = (300000 * 0.05) + (300000 * 0.10) + (temp_taxable_income - 900000) * 0.15
+                    elif temp_taxable_income <= 1500000: temp_tax_without_rebate = (300000 * 0.05) + (300000 * 0.10) + (300000 * 0.15) + (temp_taxable_income - 1200000) * 0.20
+                    else: temp_tax_without_rebate = (300000 * 0.05) + (300000 * 0.10) + (300000 * 0.15) + (300000 * 0.20) + (temp_taxable_income - 1500000) * 0.30
+                    
+                    rebate_amount = min(temp_tax_without_rebate, 25000)
+                    gross_tax = max(0, temp_tax_without_rebate - rebate_amount) # Gross tax for surcharge/cess is after rebate
                 else:
-                    gross_tax = gross_tax_initial
+                    gross_tax = gross_tax_initial # If no rebate, gross_tax is simply the calculated tax
 
                 surcharge = calculate_surcharge(gross_tax, annual_income, tax_regime)
                 tax_plus_surcharge = gross_tax + surcharge
@@ -330,9 +374,39 @@ def main():
             else: # Old Tax Regime
                 gross_tax_initial = calculate_tax_old_regime(annual_income, age_group, deductions)
                 # Rebate is already handled inside calculate_tax_old_regime, but for display clarity:
+                # To show rebate amount, need to calculate tax without rebate first
+                temp_tax_without_rebate = 0
+                temp_taxable_income_old = annual_income
+                temp_total_deductions = 0
+                max_80c_deduction = 150000
+                temp_total_deductions += min(deductions.get('80C', 0), max_80c_deduction)
+                max_80d_deduction = 25000
+                if age_group in ["60 to 80 years", "Above 80 years"]: max_80d_deduction = 50000
+                temp_total_deductions += min(deductions.get('80D', 0), max_80d_deduction)
+                max_80ccd1b_deduction = 50000
+                temp_total_deductions += min(deductions.get('80CCD(1B)', 0), max_80ccd1b_deduction)
+                max_24b_deduction = 200000
+                temp_total_deductions += min(deductions.get('24b_interest', 0), max_24b_deduction)
+                temp_taxable_income_old = max(0, annual_income - temp_total_deductions)
+
+                if age_group == "Below 60 years":
+                    if temp_taxable_income_old <= 250000: temp_tax_without_rebate = 0
+                    elif temp_taxable_income_old <= 500000: temp_tax_without_rebate = (temp_taxable_income_old - 250000) * 0.05
+                    elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (250000 * 0.05) + (temp_taxable_income_old - 500000) * 0.20
+                    else: temp_tax_without_rebate = (250000 * 0.05) + (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
+                elif age_group == "60 to 80 years":
+                    if temp_taxable_income_old <= 300000: temp_tax_without_rebate = 0
+                    elif temp_taxable_income_old <= 500000: temp_tax_without_rebate = (temp_taxable_income_old - 300000) * 0.05
+                    elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (200000 * 0.05) + (temp_taxable_income_old - 500000) * 0.20
+                    else: temp_tax_without_rebate = (200000 * 0.05) + (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
+                elif age_group == "Above 80 years":
+                    if temp_taxable_income_old <= 500000: temp_tax_without_rebate = 0
+                    elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (temp_taxable_income_old - 500000) * 0.20
+                    else: temp_tax_without_rebate = (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
+                
                 if annual_income <= 500000:
-                     rebate_amount = min(gross_tax_initial, 12500)
-                     gross_tax = max(0, gross_tax_initial) # gross_tax_initial already has rebate applied
+                     rebate_amount = min(temp_tax_without_rebate, 12500)
+                     gross_tax = max(0, temp_tax_without_rebate - rebate_amount)
                 else:
                     gross_tax = gross_tax_initial
 
@@ -346,7 +420,7 @@ def main():
                 'regime': tax_regime,
                 'income': annual_income,
                 'age_group': age_group,
-                'deductions_80c': deductions.get('80C', 0),
+                'deductions': deductions, # Store full deductions dict
                 'gross_tax': gross_tax,
                 'rebate_amount': rebate_amount,
                 'surcharge': surcharge,
@@ -374,7 +448,9 @@ def main():
         
         if results['regime'] == "Old Tax Regime":
             st.write(f"**Selected Age Group:** {results['age_group']}")
-            st.write(f"**80C Deduction:** ₹{results['deductions_80c']:,.2f}")
+            st.write(f"**Total Deductions Considered:**")
+            for ded_name, ded_val in results['deductions'].items():
+                st.write(f"  - {ded_name}: ₹{ded_val:,.2f}")
 
         st.write(f"**Tax (before Surcharge & Cess):** ₹{results['gross_tax']:,.2f}")
         if results['rebate_amount'] > 0:
@@ -505,3 +581,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
