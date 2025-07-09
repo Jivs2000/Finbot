@@ -143,7 +143,7 @@ def main():
 
         html, body, [class*="st-"] {
             font-family: 'Inter', sans-serif;
-            color: #212121; /* Dark gray for general text */
+            color: #212121; /* Dark brown for general text */
         }
 
         .stApp {
@@ -263,7 +263,7 @@ def main():
 
     # --- Header Section ---
     st.markdown('<div class="header-container">', unsafe_allow_html=True)
-    st.markdown('<p class="header-title">💰 Jivanshu Tax Assistant</p>', unsafe_allow_html=True)
+    st.markdown('<p class="header-title"> Jivanshu Tax Assistant</p>', unsafe_allow_html=True)
     st.markdown('<p class="header-subtitle">Calculate your tax for Financial Year 2024-25 (Assessment Year 2025-26)</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -478,7 +478,7 @@ def main():
     if 'results' in st.session_state:
         results = st.session_state['results']
         st.markdown('<div class="result-section">', unsafe_allow_html=True)
-        st.markdown('<h3><center>✅ Your Tax Calculation Summary</center></h3>', unsafe_allow_html=True)
+        st.markdown('<h3><center>Your Tax Calculation Summary</center></h3>', unsafe_allow_html=True)
         
         st.metric(label="Total Tax Payable", value=f"₹{results['total_tax_payable']:,.2f}")
 
