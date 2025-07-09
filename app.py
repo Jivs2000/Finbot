@@ -135,11 +135,11 @@ def main():
         }
 
         .stApp {
-            background: linear-gradient(to bottom right, #F0F8FF, #E0FFFF); /* Light blue gradient background */
+            background: linear-gradient(to bottom right, #E8F5E9, #DCEDC8); /* Light Greenish-Blue Gradient */
         }
 
         .header-container {
-            background: linear-gradient(to right, #2E86C1, #4CAF50); /* Blue to Green Gradient */
+            background: linear-gradient(to right, #388E3C, #689F38); /* Dark Green to Olive Green Gradient */
             padding: 20px 0;
             border-radius: 15px;
             margin-bottom: 2em;
@@ -156,7 +156,7 @@ def main():
         }
         .header-subtitle {
             font-size: 1.4em;
-            color: #ECF0F1; /* Light gray for subtitle */
+            color: #DCEDC8; /* Lighter green for subtitle */
             text-align: center;
             margin-bottom: 0;
         }
@@ -170,8 +170,8 @@ def main():
         .stNumberInput > div > div > input {
             border-radius: 10px;
             padding: 10px 15px;
-            border: 1px solid #D1D9E6;
-            box-shadow: inset 2px 2px 5px #B8C0D0, inset -5px -5px 10px #FFFFFF;
+            border: 1px solid #C8E6C9; /* Light green border */
+            box-shadow: inset 2px 2px 5px #A5D6A7, inset -5px -5px 10px #FFFFFF;
         }
         .stRadio > label {
             font-weight: 600; /* Semi-bold */
@@ -188,7 +188,7 @@ def main():
         .stButton button {
             border-radius: 25px; /* More rounded */
             padding: 12px 25px;
-            background: linear-gradient(to right, #2E86C1, #4CAF50); /* Button gradient */
+            background: linear-gradient(to right, #388E3C, #689F38); /* Match header button gradient */
             color: white;
             border: none;
             font-weight: bold;
@@ -199,13 +199,13 @@ def main():
             transition: all 0.3s ease;
         }
         .stButton button:hover {
-            background: linear-gradient(to right, #1A5276, #388E3C); /* Darker gradient on hover */
+            background: linear-gradient(to right, #2E7D32, #558B2F); /* Darker gradient on hover */
             transform: translateY(-2px); /* Slight lift effect */
             box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
         }
         .result-box {
-            background-color: #EBF5FB; /* Light blue */
-            border-left: 6px solid #2E86C1; /* Stronger border */
+            background-color: #E8F5E9; /* Very light green */
+            border-left: 6px solid #388E3C; /* Stronger green border */
             padding: 25px;
             border-radius: 10px;
             margin-top: 30px;
@@ -213,12 +213,12 @@ def main():
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .result-box h3 {
-            color: #2E86C1;
+            color: #388E3C; /* Dark green */
             margin-top: 0;
             font-weight: 700;
         }
         .stMetric {
-            background-color: #F8F9FA; /* Light background for metric */
+            background-color: #F1F8E9; /* Lighter greenish background for metric */
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -233,7 +233,7 @@ def main():
         .stMetric > div > div > div:last-child { /* Metric value */
             font-size: 2.5em;
             font-weight: bold;
-            color: #2E86C1;
+            color: #388E3C; /* Dark green */
         }
         .disclaimer {
             font-size: 0.85em;
@@ -446,6 +446,52 @@ def main():
         **Always consider your financial goals, risk tolerance, and liquidity needs before choosing any investment option.**
         """)
     st.markdown('</div>', unsafe_allow_html=True) # Close input-section div
+
+    st.write("---") # Separator before new section
+
+    # --- New Section: Understanding Complex Tax Scenarios ---
+    st.markdown('<div class="input-section">', unsafe_allow_html=True) # Reusing input-section style
+    st.markdown('<h2><center>🔍 Understanding Complex Tax Scenarios</center></h2>', unsafe_allow_html=True)
+    st.markdown("""
+    This calculator provides a general overview based on common scenarios. However, the Indian Income Tax Act is vast and complex. Here are some areas that require specialized understanding and are **not fully covered** by this simplified calculator:
+    """)
+
+    with st.expander("Different Income Sources"):
+        st.markdown("""
+        Beyond salary income, individuals can have various other income sources, each with specific tax treatments:
+        * **Income from House Property:** Rental income, deductions for municipal taxes, standard deduction (30% of Net Annual Value), and interest on home loan.
+        * **Profits and Gains from Business or Profession (PGBP):** Income from self-employment, professional fees, deductions for business expenses, depreciation, etc. This is a highly complex head.
+        * **Capital Gains:** Gains from selling assets like shares, mutual funds, property (short-term vs. long-term capital gains, different tax rates, indexation benefits).
+        * **Income from Other Sources:** Interest from savings accounts/FDs, dividends, gifts (above certain limits), casual income (lottery, gambling), family pension.
+        """)
+
+    with st.expander("Comprehensive Deductions & Exemptions"):
+        st.markdown("""
+        While Section 80C and 80D are common, there are many other deductions and exemptions that can significantly impact your tax liability, especially in the Old Tax Regime:
+        * **House Rent Allowance (HRA) Exemption:** For salaried individuals living in rented accommodation.
+        * **Leave Travel Allowance (LTA) Exemption:** For travel expenses during leave.
+        * **Section 80E:** Deduction for interest on education loan.
+        * **Section 80DD:** Deduction for medical treatment of a dependent with disability.
+        * **Section 80DDB:** Deduction for medical treatment of specified diseases.
+        * **Section 80TTA/80TTB:** Deduction for interest on savings bank accounts (80TTA for general, 80TTB for senior citizens).
+        * **Agricultural Income:** Fully exempt from tax, but considered for rate purposes.
+        * **Allowances & Perquisites:** Specific rules for various allowances (e.g., transport, children's education) and perquisites (e.g., company car, furnished accommodation).
+        """)
+
+    with st.expander("Complex Tax Scenarios"):
+        st.markdown("""
+        Several situations can make tax calculation intricate:
+        * **Multiple Income Heads:** When an individual has income from salary, house property, business, and capital gains simultaneously.
+        * **Set-off and Carry Forward of Losses:** Rules for adjusting losses from one income head against another, or carrying forward losses to future years.
+        * **Alternate Minimum Tax (AMT) / Minimum Alternate Tax (MAT):** Applicable to certain entities or individuals with specific deductions/exemptions, ensuring a minimum tax is paid.
+        * **Taxation of NRIs (Non-Resident Indians):** Different rules apply to NRIs, including income taxable in India, DTAA (Double Taxation Avoidance Agreements) benefits, and specific filing requirements.
+        * **International Taxation:** Complexities arising from income earned abroad, foreign tax credits, and residency status.
+        * **Presumptive Taxation:** Simplified schemes for small businesses and professionals (e.g., Section 44AD, 44ADA) where income is presumed as a percentage of turnover.
+        * **Specific Business Deductions:** A wide array of deductions available for different types of businesses and professions.
+        * **TDS (Tax Deducted at Source) / TCS (Tax Collected at Source):** Understanding how these impact your final tax liability and claiming credits.
+        """)
+    st.markdown('</div>', unsafe_allow_html=True) # Close input-section div
+
 
     # --- Disclaimer ---
     st.markdown(
