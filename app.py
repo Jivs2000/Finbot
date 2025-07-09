@@ -9,18 +9,15 @@ import streamlit as st
 
 # Income Tax Slabs for FY 2024-25 (AY 2025-26)
 
-def calculate_tax_new_regime(income):
+def calculate_tax_new_regime(gross_total_income):
     """
     Calculates income tax as per the New Tax Regime for FY 2024-25.
     Includes Standard Deduction for salaried individuals and Section 87A rebate.
     """
-    taxable_income = income
-
-    # Standard Deduction for salaried individuals in New Regime (from FY 2023-24)
-    # This is automatically applied if income is above 15.5 lakhs, or 50,000 otherwise.
-    # For simplicity, we'll assume it's applied if income is above 0 and salaried.
-    if income > 0:
-        taxable_income = max(0, income - 50000) # Apply standard deduction of 50,000
+    # Standard Deduction (only for salaried income, but applied to GTI for simplicity in this calculator)
+    # In a real scenario, Standard Deduction is only on Salary Income.
+    # For this calculator, we apply it to GTI to simplify the flow.
+    taxable_income = max(0, gross_total_income - 50000) # Apply standard deduction of 50,000
 
     tax = 0
     if taxable_income <= 300000:
@@ -32,7 +29,7 @@ def calculate_tax_new_regime(income):
     elif taxable_income <= 1200000:
         tax = (300000 * 0.05) + (300000 * 0.10) + (taxable_income - 900000) * 0.15
     elif taxable_income <= 1500000:
-        tax = (300000 * 0.05) + (300000 * 0.10) + (300000 * 0.15) + (300000 * 0.20)
+        tax = (300000 * 0.05) + (300000 * 0.10) + (300000 * 0.15) + (taxable_income - 1200000) * 0.20
         tax += (taxable_income - 1500000) * 0.30
     else:
         tax = (300000 * 0.05) + (300000 * 0.10) + (300000 * 0.15) + (300000 * 0.20)
@@ -40,46 +37,39 @@ def calculate_tax_new_regime(income):
 
     # Section 87A Rebate (for New Regime: up to 25,000 if total income <= 7,00,000)
     rebate = 0
-    if income <= 700000: # Note: rebate is on 'total income' before standard deduction
+    if gross_total_income <= 700000: # Note: rebate is on 'total income' before standard deduction
         rebate = min(tax, 25000) # Rebate is lesser of tax payable or 25,000
 
     net_tax_before_surcharge_cess = tax - rebate
     return max(0, net_tax_before_surcharge_cess) # Ensure tax is not negative
 
-def calculate_tax_old_regime(income, age_group, deductions):
+def calculate_tax_old_regime(gross_total_income, age_group, deductions):
     """
     Calculates income tax as per the Old Tax Regime for FY 2024-25.
-    This is a simplified version and does NOT include all possible deductions.
+    Accounts for various deductions.
     """
-    # Apply deductions for Old Regime
     total_deductions = 0
 
-    # Section 80C
-    max_80c_deduction = 150000
-    total_deductions += min(deductions.get('80C', 0), max_80c_deduction)
-
-    # Section 80D (Health Insurance) - Simplified Max
-    max_80d_deduction = 25000 # For general
+    # Chapter VI-A Deductions
+    total_deductions += min(deductions.get('80C', 0), 150000) # Max 1.5 Lakh
+    
+    # 80D - Health Insurance (simplified max)
+    max_80d_deduction = 25000 # Self, spouse, dependent children
     if age_group in ["60 to 80 years", "Above 80 years"]:
-        max_80d_deduction = 50000 # For senior citizens
+        max_80d_deduction = 50000 # Senior citizens
     total_deductions += min(deductions.get('80D', 0), max_80d_deduction)
 
-    # Section 80CCD(1B) (NPS)
-    max_80ccd1b_deduction = 50000
-    total_deductions += min(deductions.get('80CCD(1B)', 0), max_80ccd1b_deduction)
+    total_deductions += min(deductions.get('80CCD(1B)', 0), 50000) # NPS additional
+    total_deductions += min(deductions.get('80E', 0), gross_total_income) # Education Loan Interest (no max limit, but limited by interest paid)
+    total_deductions += min(deductions.get('80G', 0), gross_total_income) # Donations (limits apply based on donee)
+    total_deductions += min(deductions.get('80TTA', 0), 10000) # Savings interest (for non-seniors)
+    if age_group in ["60 to 80 years", "Above 80 years"]:
+        total_deductions += min(deductions.get('80TTB', 0), 50000) # Savings/FD interest (for seniors)
 
-    # Section 24(b) (Home Loan Interest)
-    max_24b_deduction = 200000
-    total_deductions += min(deductions.get('24b_interest', 0), max_24b_deduction)
+    # Section 24(b) - Home Loan Interest (deduction from House Property Income, but here treated as general deduction for simplicity)
+    total_deductions += min(deductions.get('24b_interest', 0), 200000) # Max 2 Lakh
 
-    # Combine all income sources for total taxable income
-    # Note: For simplicity, assuming these are added to the 'annual_income'
-    # In a real scenario, income from sources like house property, capital gains, PGBP
-    # would be calculated separately and then aggregated to Gross Total Income (GTI)
-    # before applying Chapter VI-A deductions.
-    # Here, 'income' is treated as Gross Total Income for deduction purposes.
-
-    taxable_income = max(0, income - total_deductions)
+    taxable_income = max(0, gross_total_income - total_deductions)
 
     tax = 0
     if age_group == "Below 60 years":
@@ -110,7 +100,7 @@ def calculate_tax_old_regime(income, age_group, deductions):
     
     # Section 87A Rebate (for Old Regime: up to 12,500 if total income <= 5,00,000)
     rebate = 0
-    if income <= 500000: # Note: rebate is on 'total income' before deductions
+    if gross_total_income <= 500000: # Note: rebate is on 'total income' before deductions
         rebate = min(tax, 12500)
 
     net_tax_before_surcharge_cess = tax - rebate
@@ -143,7 +133,7 @@ def calculate_cess(tax_plus_surcharge):
 # --- Streamlit UI ---
 def main():
     # >>> IMPORTANT: st.set_page_config MUST be the very first Streamlit command <<<
-    st.set_page_config(page_title="Jivanshu Tax Assistant", layout="centered") # Changed page_title
+    st.set_page_config(page_title="Jivanshu Tax Assistant", layout="centered") 
 
     # --- Custom CSS for Eye-Catching GUI ---
     st.markdown(
@@ -153,15 +143,15 @@ def main():
 
         html, body, [class*="st-"] {
             font-family: 'Inter', sans-serif;
-            color: #333333;
+            color: #212121; /* Dark gray for general text */
         }
 
         .stApp {
-            background: linear-gradient(to bottom right, #E0F7FA, #E1BEE7); /* Light Cyan to Light Purple Gradient */
+            background: linear-gradient(to bottom right, #E3F2FD, #BBDEFB); /* Light blue gradient background */
         }
 
         .header-container {
-            background: linear-gradient(to right, #00BCD4, #9C27B0); /* Cyan to Deep Purple Gradient */
+            background: linear-gradient(to right, #1A237E, #FFC107); /* Deep Blue to Amber Gradient */
             padding: 20px 0;
             border-radius: 15px;
             margin-bottom: 2em;
@@ -178,11 +168,11 @@ def main():
         }
         .header-subtitle {
             font-size: 1.4em;
-            color: #E0F7FA; /* Lighter cyan for subtitle */
+            color: #E3F2FD; /* Lighter blue for subtitle */
             text-align: center;
             margin-bottom: 0;
         }
-        .input-section, .result-section {
+        .input-section, .result-section, .info-section { /* Added .info-section */
             background-color: white;
             padding: 30px;
             border-radius: 15px;
@@ -192,12 +182,12 @@ def main():
         .stNumberInput > div > div > input {
             border-radius: 10px;
             padding: 10px 15px;
-            border: 1px solid #B2EBF2; /* Light cyan border */
-            box-shadow: inset 2px 2px 5px #80DEEA, inset -5px -5px 10px #FFFFFF;
+            border: 1px solid #90CAF9; /* Light blue border */
+            box-shadow: inset 2px 2px 5px #64B5F6, inset -5px -5px 10px #FFFFFF;
         }
         .stRadio > label {
             font-weight: 600; /* Semi-bold */
-            color: #333;
+            color: #212121;
             font-size: 1.1em;
         }
         .stRadio div[role="radiogroup"] {
@@ -210,7 +200,7 @@ def main():
         .stButton button {
             border-radius: 25px; /* More rounded */
             padding: 12px 25px;
-            background: linear-gradient(to right, #00BCD4, #9C27B0); /* Match header button gradient */
+            background: linear-gradient(to right, #1A237E, #FFC107); /* Match header button gradient */
             color: white;
             border: none;
             font-weight: bold;
@@ -221,13 +211,13 @@ def main():
             transition: all 0.3s ease;
         }
         .stButton button:hover {
-            background: linear-gradient(to right, #00ACC1, #8E24AA); /* Darker gradient on hover */
+            background: linear-gradient(to right, #0D47A1, #FFB300); /* Darker gradient on hover */
             transform: translateY(-2px); /* Slight lift effect */
             box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
         }
         .result-box {
-            background-color: #E0F7FA; /* Very light cyan */
-            border-left: 6px solid #00BCD4; /* Stronger cyan border */
+            background-color: #E3F2FD; /* Very light blue */
+            border-left: 6px solid #1A237E; /* Stronger deep blue border */
             padding: 25px;
             border-radius: 10px;
             margin-top: 30px;
@@ -235,12 +225,12 @@ def main():
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .result-box h3 {
-            color: #00BCD4; /* Cyan */
+            color: #1A237E; /* Deep Blue */
             margin-top: 0;
             font-weight: 700;
         }
         .stMetric {
-            background-color: #F3F8FA; /* Lighter cyan background for metric */
+            background-color: #F8F9FA; /* Light background for metric */
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -255,7 +245,7 @@ def main():
         .stMetric > div > div > div:last-child { /* Metric value */
             font-size: 2.5em;
             font-weight: bold;
-            color: #00BCD4; /* Cyan */
+            color: #FFC107; /* Amber */
         }
         .disclaimer {
             font-size: 0.85em;
@@ -273,7 +263,7 @@ def main():
 
     # --- Header Section ---
     st.markdown('<div class="header-container">', unsafe_allow_html=True)
-    st.markdown('<p class="header-title">💰 Jivanshu Tax Assistant</p>', unsafe_allow_html=True) # Changed header_title
+    st.markdown('<p class="header-title">💰 Jivanshu Tax Assistant</p>', unsafe_allow_html=True)
     st.markdown('<p class="header-subtitle">Calculate your tax for Financial Year 2024-25 (Assessment Year 2025-26)</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -284,35 +274,56 @@ def main():
         st.markdown('<div class="input-section">', unsafe_allow_html=True)
         st.subheader("Your Income Details")
 
-        annual_income = st.number_input(
-            "Enter your Total Annual Income (₹) (Sum of all income sources)", # Clarified input
+        # Basic Income Input
+        gross_salary = st.number_input(
+            "Gross Salary Income (₹)",
             min_value=0,
-            value=750000, # Default value
+            value=750000,
             step=10000,
             format="%d",
-            key="annual_income_input" # Added key for reset
+            key="gross_salary_input"
         )
 
         tax_regime = st.radio(
             "Choose Tax Regime:",
             ("New Tax Regime", "Old Tax Regime"),
-            index=0, # Default to New Tax Regime
-            key="tax_regime_radio" # Added key for reset
+            index=0,
+            key="tax_regime_radio"
         )
 
         age_group = "Below 60 years" # Default for New Regime, will be used if Old Regime is selected
         deductions = {} # Dictionary to store deduction values
+        other_income_sources = {} # Dictionary to store other income sources
 
         if tax_regime == "Old Tax Regime":
-            st.info("The Old Tax Regime calculation is simplified here. For a precise calculation, consult a tax professional as it involves many specific deductions.")
+            st.info("For Old Tax Regime, you can claim various deductions and exemptions. Please fill in the applicable amounts below.")
             age_group = st.radio(
                 "Select Your Age Group:",
                 ("Below 60 years", "60 to 80 years", "Above 80 years"),
                 index=0,
-                key="age_group_radio" # Added key for reset
+                key="age_group_radio"
             )
             
-            st.subheader("Detailed Deductions (Old Regime)")
+            st.subheader("Other Income Sources (Old Regime)")
+            st.markdown("*(Enter amounts for applicable income sources)*")
+            other_income_sources['house_property'] = st.number_input(
+                "Income from House Property (Rent Received - Expenses) (₹)",
+                min_value=0, value=0, step=1000, format="%d", key="income_hp_input"
+            )
+            other_income_sources['capital_gains_long_term'] = st.number_input(
+                "Long Term Capital Gains (LTCG) (₹)",
+                min_value=0, value=0, step=1000, format="%d", key="income_ltcg_input"
+            )
+            other_income_sources['capital_gains_short_term'] = st.number_input(
+                "Short Term Capital Gains (STCG) (₹)",
+                min_value=0, value=0, step=1000, format="%d", key="income_stcg_input"
+            )
+            other_income_sources['other_sources'] = st.number_input(
+                "Income from Other Sources (Interest, Dividends, etc.) (₹)",
+                min_value=0, value=0, step=1000, format="%d", key="income_os_input"
+            )
+            
+            st.subheader("Detailed Deductions & Exemptions (Old Regime)")
             st.markdown("*(Enter amounts for applicable deductions. Max limits apply.)*")
 
             deductions['80C'] = st.number_input(
@@ -331,10 +342,37 @@ def main():
                 "Deduction u/s 24(b) (Home Loan Interest - Max ₹2,00,000)",
                 min_value=0, max_value=200000, value=0, step=1000, format="%d", key="deduction_24b_input"
             )
-            # Add more common deductions here if needed, e.g., 80E, 80G, etc.
-            # For this simplified calculator, we'll stick to a few key ones.
+            deductions['80E'] = st.number_input(
+                "Deduction u/s 80E (Education Loan Interest)",
+                min_value=0, value=0, step=1000, format="%d", key="deduction_80e_input"
+            )
+            deductions['80G'] = st.number_input(
+                "Deduction u/s 80G (Donations - Limits Apply)",
+                min_value=0, value=0, step=1000, format="%d", key="deduction_80g_input"
+            )
+            deductions['80TTA'] = st.number_input(
+                "Deduction u/s 80TTA (Savings A/C Interest - Max ₹10,000)",
+                min_value=0, max_value=10000, value=0, step=100, format="%d", key="deduction_80tta_input"
+            )
+            if age_group in ["60 to 80 years", "Above 80 years"]:
+                deductions['80TTB'] = st.number_input(
+                    "Deduction u/s 80TTB (Senior Citizen Savings/FD Interest - Max ₹50,000)",
+                    min_value=0, max_value=50000, value=0, step=1000, format="%d", key="deduction_80ttb_input"
+                )
 
         st.markdown('</div>', unsafe_allow_html=True) # Close input-section div
+
+    # Calculate Gross Total Income based on regime
+    # For New Regime, we assume annual_income is already GTI
+    # For Old Regime, we sum up the specific income sources
+    if tax_regime == "Old Tax Regime":
+        total_gross_income = gross_salary + \
+                             other_income_sources.get('house_property', 0) + \
+                             other_income_sources.get('capital_gains_long_term', 0) + \
+                             other_income_sources.get('capital_gains_short_term', 0) + \
+                             other_income_sources.get('other_sources', 0)
+    else:
+        total_gross_income = gross_salary # For new regime, we stick to the initial single input for simplicity
 
     col1, col2 = st.columns(2)
     with col1:
@@ -343,51 +381,51 @@ def main():
             surcharge = 0
             cess = 0
             total_tax_payable = 0
-            rebate_amount = 0 # To display rebate separately
+            rebate_amount = 0 
 
             if tax_regime == "New Tax Regime":
-                gross_tax_initial = calculate_tax_new_regime(annual_income)
-                # Rebate is already handled inside calculate_tax_new_regime, but for display clarity:
-                if annual_income <= 700000:
-                    # The rebate calculation needs to consider the tax *before* it's zeroed out by the rebate
-                    # The calculate_tax_new_regime returns the final tax after rebate.
-                    # To show the rebate amount, we need to re-calculate tax without rebate first.
-                    temp_tax_without_rebate = 0
-                    temp_taxable_income = max(0, annual_income - 50000) # Apply standard deduction
-                    if temp_taxable_income <= 300000: temp_tax_without_rebate = 0
-                    elif temp_taxable_income <= 600000: temp_tax_without_rebate = (temp_taxable_income - 300000) * 0.05
-                    elif temp_taxable_income <= 900000: temp_tax_without_rebate = (300000 * 0.05) + (temp_taxable_income - 600000) * 0.10
-                    elif temp_taxable_income <= 1200000: temp_tax_without_rebate = (300000 * 0.05) + (300000 * 0.10) + (temp_taxable_income - 900000) * 0.15
-                    elif temp_taxable_income <= 1500000: temp_tax_without_rebate = (300000 * 0.05) + (300000 * 0.10) + (300000 * 0.15) + (temp_taxable_income - 1200000) * 0.20
-                    else: temp_tax_without_rebate = (300000 * 0.05) + (300000 * 0.10) + (300000 * 0.15) + (300000 * 0.20) + (temp_taxable_income - 1500000) * 0.30
-                    
+                gross_tax_initial = calculate_tax_new_regime(total_gross_income)
+                
+                # To show the rebate amount, we need to re-calculate tax without rebate first.
+                temp_tax_without_rebate = 0
+                temp_taxable_income = max(0, total_gross_income - 50000) # Apply standard deduction
+                if temp_taxable_income <= 300000: temp_tax_without_rebate = 0
+                elif temp_taxable_income <= 600000: temp_tax_without_rebate = (temp_taxable_income - 300000) * 0.05
+                elif temp_taxable_income <= 900000: temp_tax_without_rebate = (300000 * 0.05) + (temp_taxable_income - 600000) * 0.10
+                elif temp_taxable_income <= 1200000: temp_tax_without_rebate = (300000 * 0.05) + (300000 * 0.10) + (temp_taxable_income - 900000) * 0.15
+                elif temp_taxable_income <= 1500000: temp_tax_without_rebate = (300000 * 0.05) + (300000 * 0.10) + (300000 * 0.15) + (temp_taxable_income - 1200000) * 0.20
+                else: temp_tax_without_rebate = (300000 * 0.05) + (300000 * 0.10) + (300000 * 0.15) + (300000 * 0.20) + (temp_taxable_income - 1500000) * 0.30
+                
+                if total_gross_income <= 700000:
                     rebate_amount = min(temp_tax_without_rebate, 25000)
                     gross_tax = max(0, temp_tax_without_rebate - rebate_amount) # Gross tax for surcharge/cess is after rebate
                 else:
                     gross_tax = gross_tax_initial # If no rebate, gross_tax is simply the calculated tax
 
-                surcharge = calculate_surcharge(gross_tax, annual_income, tax_regime)
+                surcharge = calculate_surcharge(gross_tax, total_gross_income, tax_regime)
                 tax_plus_surcharge = gross_tax + surcharge
                 cess = calculate_cess(tax_plus_surcharge)
                 total_tax_payable = tax_plus_surcharge + cess
                 
             else: # Old Tax Regime
-                gross_tax_initial = calculate_tax_old_regime(annual_income, age_group, deductions)
-                # Rebate is already handled inside calculate_tax_old_regime, but for display clarity:
+                gross_tax_initial = calculate_tax_old_regime(total_gross_income, age_group, deductions)
+                
                 # To show rebate amount, need to calculate tax without rebate first
                 temp_tax_without_rebate = 0
-                temp_taxable_income_old = annual_income
-                temp_total_deductions = 0
-                max_80c_deduction = 150000
-                temp_total_deductions += min(deductions.get('80C', 0), max_80c_deduction)
+                temp_total_deductions_old = 0
+                temp_total_deductions_old += min(deductions.get('80C', 0), 150000)
                 max_80d_deduction = 25000
                 if age_group in ["60 to 80 years", "Above 80 years"]: max_80d_deduction = 50000
-                temp_total_deductions += min(deductions.get('80D', 0), max_80d_deduction)
-                max_80ccd1b_deduction = 50000
-                temp_total_deductions += min(deductions.get('80CCD(1B)', 0), max_80ccd1b_deduction)
-                max_24b_deduction = 200000
-                temp_total_deductions += min(deductions.get('24b_interest', 0), max_24b_deduction)
-                temp_taxable_income_old = max(0, annual_income - temp_total_deductions)
+                temp_total_deductions_old += min(deductions.get('80D', 0), max_80d_deduction)
+                temp_total_deductions_old += min(deductions.get('80CCD(1B)', 0), 50000)
+                temp_total_deductions_old += min(deductions.get('80E', 0), total_gross_income)
+                temp_total_deductions_old += min(deductions.get('80G', 0), total_gross_income)
+                temp_total_deductions_old += min(deductions.get('80TTA', 0), 10000)
+                if age_group in ["60 to 80 years", "Above 80 years"]:
+                    temp_total_deductions_old += min(deductions.get('80TTB', 0), 50000)
+                temp_total_deductions_old += min(deductions.get('24b_interest', 0), 200000)
+
+                temp_taxable_income_old = max(0, total_gross_income - temp_total_deductions_old)
 
                 if age_group == "Below 60 years":
                     if temp_taxable_income_old <= 250000: temp_tax_without_rebate = 0
@@ -404,13 +442,13 @@ def main():
                     elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (temp_taxable_income_old - 500000) * 0.20
                     else: temp_tax_without_rebate = (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
                 
-                if annual_income <= 500000:
+                if total_gross_income <= 500000:
                      rebate_amount = min(temp_tax_without_rebate, 12500)
                      gross_tax = max(0, temp_tax_without_rebate - rebate_amount)
                 else:
                     gross_tax = gross_tax_initial
 
-                surcharge = calculate_surcharge(gross_tax, annual_income, tax_regime)
+                surcharge = calculate_surcharge(gross_tax, total_gross_income, tax_regime)
                 tax_plus_surcharge = gross_tax + surcharge
                 cess = calculate_cess(tax_plus_surcharge)
                 total_tax_payable = tax_plus_surcharge + cess
@@ -418,9 +456,10 @@ def main():
             # Store results in session state to persist after rerun
             st.session_state['results'] = {
                 'regime': tax_regime,
-                'income': annual_income,
+                'gross_total_income': total_gross_income,
                 'age_group': age_group,
                 'deductions': deductions, # Store full deductions dict
+                'other_income_sources': other_income_sources, # Store other income sources
                 'gross_tax': gross_tax,
                 'rebate_amount': rebate_amount,
                 'surcharge': surcharge,
@@ -444,13 +483,18 @@ def main():
         st.metric(label="Total Tax Payable", value=f"₹{results['total_tax_payable']:,.2f}")
 
         st.write(f"**Selected Regime:** {results['regime']}")
-        st.write(f"**Annual Income:** ₹{results['income']:,.2f}")
+        st.write(f"**Gross Total Income:** ₹{results['gross_total_income']:,.2f}")
         
         if results['regime'] == "Old Tax Regime":
             st.write(f"**Selected Age Group:** {results['age_group']}")
+            st.write(f"**Income from Other Sources:**")
+            for source_name, source_val in results['other_income_sources'].items():
+                if source_val > 0:
+                    st.write(f"  - {source_name.replace('_', ' ').title()}: ₹{source_val:,.2f}")
             st.write(f"**Total Deductions Considered:**")
             for ded_name, ded_val in results['deductions'].items():
-                st.write(f"  - {ded_name}: ₹{ded_val:,.2f}")
+                if ded_val > 0:
+                    st.write(f"  - {ded_name}: ₹{ded_val:,.2f}")
 
         st.write(f"**Tax (before Surcharge & Cess):** ₹{results['gross_tax']:,.2f}")
         if results['rebate_amount'] > 0:
@@ -463,7 +507,7 @@ def main():
     st.write("---") # Separator before new section
 
     # --- New Section: Tax Saving & Investment Insights ---
-    st.markdown('<div class="input-section">', unsafe_allow_html=True) # Reusing input-section style
+    st.markdown('<div class="info-section">', unsafe_allow_html=True) # Reusing info-section style
     st.markdown('<h2><center>💡 Tax Saving & Investment Insights</center></h2>', unsafe_allow_html=True)
 
     with st.expander("Common Tax Saving Sections"):
@@ -483,7 +527,9 @@ def main():
         * **Section 80D (Health Insurance):** Deductions for health insurance premiums for yourself, spouse, dependent children, and parents. Limits vary based on age (senior citizens get higher limits).
         * **Section 80CCD(1B) (NPS):** An additional deduction of up to ₹50,000 for contributions to the National Pension System (NPS), over and above the 80C limit.
         * **Section 24(b) (Home Loan Interest):** Deduction for interest paid on housing loans (up to ₹2,00,000 for self-occupied property).
-        * **Section 80G (Donations):** Deductions for donations to certain approved charitable institutions.
+        * **Section 80E (Education Loan Interest):** Deduction for interest paid on education loans. No upper limit, but limited to interest paid.
+        * **Section 80G (Donations):** Deductions for donations to certain approved charitable institutions. Limits and eligibility apply.
+        * **Section 80TTA/80TTB (Savings Interest):** Deduction for interest from savings accounts. 80TTA (Max ₹10,000) for general, 80TTB (Max ₹50,000) for senior citizens (replaces 80TTA for them).
         * **Section 80EEA (Affordable Housing Loan Interest):** Additional deduction for interest on housing loans for affordable housing, over and above Section 24(b) (conditions apply).
 
         *Note: The New Tax Regime generally does not allow these deductions, except for the Standard Deduction for salaried individuals and employer's contribution to NPS.*
@@ -521,51 +567,103 @@ def main():
 
         **Always consider your financial goals, risk tolerance, and liquidity needs before choosing any investment option.**
         """)
-    st.markdown('</div>', unsafe_allow_html=True) # Close input-section div
+    st.markdown('</div>', unsafe_allow_html=True) # Close info-section div
 
     st.write("---") # Separator before new section
 
-    # --- New Section: Understanding Complex Tax Scenarios ---
-    st.markdown('<div class="input-section">', unsafe_allow_html=True) # Reusing input-section style
-    st.markdown('<h2><center>🔍 Understanding Complex Tax Scenarios</center></h2>', unsafe_allow_html=True)
+    # --- New Section: Detailed Income & Deduction Inputs (for Old Regime) ---
+    st.markdown('<div class="input-section">', unsafe_allow_html=True)
+    st.markdown('<h2><center>📝 Detailed Income & Deduction Inputs (Old Regime Only)</center></h2>', unsafe_allow_html=True)
     st.markdown("""
-    This calculator provides a general overview based on common scenarios. However, the Indian Income Tax Act is vast and complex. Here are some areas that require specialized understanding and are **not fully covered** by this simplified calculator:
+    **This section is primarily relevant for the Old Tax Regime.** If you've chosen the New Tax Regime, most of these deductions and separate income calculations are not applicable.
     """)
 
-    with st.expander("Different Income Sources"):
-        st.markdown("""
-        Beyond salary income, individuals can have various other income sources, each with specific tax treatments:
-        * **Income from House Property:** Rental income, deductions for municipal taxes, standard deduction (30% of Net Annual Value), and interest on home loan.
-        * **Profits and Gains from Business or Profession (PGBP):** Income from self-employment, professional fees, deductions for business expenses, depreciation, etc. This is a highly complex head.
-        * **Capital Gains:** Gains from selling assets like shares, mutual funds, property (short-term vs. long-term capital gains, different tax rates, indexation benefits).
-        * **Income from Other Sources:** Interest from savings accounts/FDs, dividends, gifts (above certain limits), casual income (lottery, gambling), family pension.
-        """)
+    with st.expander("Enter Specific Income Sources (Old Regime)"):
+        st.subheader("Income from House Property")
+        hp_income = st.number_input(
+            "Gross Rental Income (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="hp_gross_rent"
+        )
+        hp_municipal_tax = st.number_input(
+            "Municipal Taxes Paid (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="hp_municipal_tax"
+        )
+        # Net Annual Value (NAV) = Gross Rental Income - Municipal Taxes
+        nav = max(0, hp_income - hp_municipal_tax)
+        st.write(f"Net Annual Value (NAV): ₹{nav:,.2f}")
+        
+        # Standard Deduction on HP Income (30% of NAV)
+        hp_standard_deduction = nav * 0.30
+        st.write(f"Standard Deduction (30% of NAV): ₹{hp_standard_deduction:,.2f}")
 
-    with st.expander("Comprehensive Deductions & Exemptions"):
-        st.markdown("""
-        While Section 80C and 80D are common, there are many other deductions and exemptions that can significantly impact your tax liability, especially in the Old Tax Regime:
-        * **House Rent Allowance (HRA) Exemption:** For salaried individuals living in rented accommodation.
-        * **Leave Travel Allowance (LTA) Exemption:** For travel expenses during leave.
-        * **Section 80E:** Deduction for interest on education loan.
-        * **Section 80DD:** Deduction for medical treatment of a dependent with disability.
-        * **Section 80DDB:** Deduction for medical treatment of specified diseases.
-        * **Section 80TTA/80TTB:** Deduction for interest on savings bank accounts (80TTA for general, 80TTB for senior citizens).
-        * **Agricultural Income:** Fully exempt from tax, but considered for rate purposes.
-        * **Allowances & Perquisites:** Specific rules for various allowances (e.g., transport, children's education) and perquisites (e.g., company car, furnished accommodation).
-        """)
+        hp_interest_loan = st.number_input(
+            "Interest on Home Loan for House Property (Section 24(b) - covered in deductions below) (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="hp_interest_loan_input"
+        )
+        
+        # This is a simplified calculation for display.
+        # Actual HP income calculation is more detailed.
+        income_from_hp_calc = nav - hp_standard_deduction - hp_interest_loan
+        st.info(f"Calculated Income from House Property (simplified): ₹{income_from_hp_calc:,.2f}")
+        st.markdown("*(This value is for display. The home loan interest deduction is added to your total deductions if you are in the Old Regime.)*")
 
-    with st.expander("Complex Tax Scenarios"):
-        st.markdown("""
-        Several situations can make tax calculation intricate:
-        * **Multiple Income Heads:** When an individual has income from salary, house property, business, and capital gains simultaneously.
-        * **Set-off and Carry Forward of Losses:** Rules for adjusting losses from one income head against another, or carrying forward losses to future years.
-        * **Alternate Minimum Tax (AMT) / Minimum Alternate Tax (MAT):** Applicable to certain entities or individuals with specific deductions/exemptions, ensuring a minimum tax is paid.
-        * **Taxation of NRIs (Non-Resident Indians):** Different rules apply to NRIs, including income taxable in India, DTAA (Double Taxation Avoidance Agreements) benefits, and specific filing requirements.
-        * **International Taxation:** Complexities arising from income earned abroad, foreign tax credits, and residency status.
-        * **Presumptive Taxation:** Simplified schemes for small businesses and professionals (e.g., Section 44AD, 44ADA) where income is presumed as a percentage of turnover.
-        * **Specific Business Deductions:** A wide array of deductions available for different types of businesses and professions.
-        * **TDS (Tax Deducted at Source) / TCS (Tax Collected at Source):** Understanding how these impact your final tax liability and claiming credits.
-        """)
+        st.subheader("Capital Gains")
+        ltcg_amount = st.number_input(
+            "Long Term Capital Gains (LTCG) (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="ltcg_input_detailed"
+        )
+        stcg_amount = st.number_input(
+            "Short Term Capital Gains (STCG) (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="stcg_input_detailed"
+        )
+        st.markdown("*(Taxation of capital gains is complex and depends on asset type, holding period, and specific sections. This calculator only takes the amount as input.)*")
+
+        st.subheader("Profits and Gains from Business or Profession (PGBP)")
+        pnbp_income = st.number_input(
+            "Net Income from Business/Profession (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="pnbp_input"
+        )
+        st.markdown("*(This is a highly complex head. Please enter your net taxable income after all applicable business expenses and depreciation.)*")
+
+        st.subheader("Income from Other Sources")
+        interest_income = st.number_input(
+            "Interest Income (Savings, FDs, etc.) (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="interest_income_input"
+        )
+        dividend_income = st.number_input(
+            "Dividend Income (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="dividend_income_input"
+        )
+        casual_income = st.number_input(
+            "Casual Income (Lottery, Gambling, etc.) (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="casual_income_input"
+        )
+        st.markdown("*(Note: Casual income is taxed at a flat 30% without deductions.)*")
+
+        # Update total_gross_income based on these detailed inputs if Old Regime is selected
+        if tax_regime == "Old Tax Regime":
+            total_gross_income = gross_salary + \
+                                 max(0, income_from_hp_calc) + \
+                                 ltcg_amount + stcg_amount + \
+                                 pnbp_income + \
+                                 interest_income + dividend_income + casual_income
+            st.session_state['annual_income_input'] = total_gross_income # Update the main input for consistency
+
+    with st.expander("Enter Specific Exemptions (Old Regime)"):
+        st.subheader("Exempt Income & Allowances (Not part of GTI)")
+        hra_exemption = st.number_input(
+            "HRA Exemption (as per rules) (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="hra_exemption_input"
+        )
+        lta_exemption = st.number_input(
+            "LTA Exemption (as per rules) (₹)",
+            min_value=0, value=0, step=1000, format="%d", key="lta_exemption_input"
+        )
+        # Note: These are usually deducted from Gross Salary to arrive at Taxable Salary.
+        # For simplicity, we are showing them as inputs but not directly using them in the main calculation flow
+        # as the 'Gross Salary Income' is assumed to be the taxable portion after these.
+        st.info("These are typically excluded from Gross Salary before tax calculation. Ensure your 'Gross Salary Income' input reflects this if applicable.")
+
     st.markdown('</div>', unsafe_allow_html=True) # Close input-section div
 
 
