@@ -121,7 +121,7 @@ def calculate_cess(tax_plus_surcharge):
 # --- Streamlit UI ---
 def main():
     # >>> IMPORTANT: st.set_page_config MUST be the very first Streamlit command <<<
-    st.set_page_config(page_title="Geldium Tax Calculator", layout="centered", icon="💰")
+    st.set_page_config(page_title="Jivanshu Tax Assistant", layout="centered") # Changed page_title
 
     # --- Custom CSS for Eye-Catching GUI ---
     st.markdown(
@@ -251,7 +251,7 @@ def main():
 
     # --- Header Section ---
     st.markdown('<div class="header-container">', unsafe_allow_html=True)
-    st.markdown('<p class="header-title">💰 Geldium Income Tax Calculator</p>', unsafe_allow_html=True)
+    st.markdown('<p class="header-title">💰 Jivanshu Tax Assistant</p>', unsafe_allow_html=True) # Changed header_title
     st.markdown('<p class="header-subtitle">Calculate your tax for Financial Year 2024-25 (Assessment Year 2025-26)</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
