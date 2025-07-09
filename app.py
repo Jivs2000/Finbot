@@ -143,15 +143,16 @@ def main():
 
         html, body, [class*="st-"] {
             font-family: 'Inter', sans-serif;
-            color: #212121; /* Dark brown for general text */
+            color: #000000; /* Changed to Black */
+            font-weight: normal; /* Ensure general text is not forced bold unless specified */
         }
 
         .stApp {
-            background: linear-gradient(to bottom right, #E3F2FD, #BBDEFB); /* Light blue gradient background */
+            background: linear-gradient(to bottom right, #FCE4EC, #E1BEE7); /* Light Pink to Light Purple Gradient */
         }
 
         .header-container {
-            background: linear-gradient(to right, #1A237E, #FFC107); /* Deep Blue to Amber Gradient */
+            background: linear-gradient(to right, #880E4F, #AD1457); /* Darker Pink/Maroon Gradient */
             padding: 20px 0;
             border-radius: 15px;
             margin-bottom: 2em;
@@ -168,7 +169,7 @@ def main():
         }
         .header-subtitle {
             font-size: 1.4em;
-            color: #E3F2FD; /* Lighter blue for subtitle */
+            color: #F8BBD0; /* Lighter pink for subtitle */
             text-align: center;
             margin-bottom: 0;
         }
@@ -182,12 +183,12 @@ def main():
         .stNumberInput > div > div > input {
             border-radius: 10px;
             padding: 10px 15px;
-            border: 1px solid #90CAF9; /* Light blue border */
-            box-shadow: inset 2px 2px 5px #64B5F6, inset -5px -5px 10px #FFFFFF;
+            border: 1px solid #F48FB1; /* Pink border */
+            box-shadow: inset 2px 2px 5px #F06292, inset -5px -5px 10px #FFFFFF;
         }
         .stRadio > label {
             font-weight: 600; /* Semi-bold */
-            color: #212121;
+            color: #000000; /* Changed to Black */
             font-size: 1.1em;
         }
         .stRadio div[role="radiogroup"] {
@@ -200,7 +201,7 @@ def main():
         .stButton button {
             border-radius: 25px; /* More rounded */
             padding: 12px 25px;
-            background: linear-gradient(to right, #1A237E, #FFC107); /* Match header button gradient */
+            background: linear-gradient(to right, #880E4F, #AD1457); /* Match header button gradient */
             color: white;
             border: none;
             font-weight: bold;
@@ -211,29 +212,29 @@ def main():
             transition: all 0.3s ease;
         }
         .stButton button:hover {
-            background: linear-gradient(to right, #0D47A1, #FFB300); /* Darker gradient on hover */
+            background: linear-gradient(to right, #5C002B, #7B1FA2); /* Darker gradient on hover, transitioning to purple */
             transform: translateY(-2px); /* Slight lift effect */
-            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+            box_shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
         }
         .result-box {
-            background-color: #E3F2FD; /* Very light blue */
-            border-left: 6px solid #1A237E; /* Stronger deep blue border */
+            background-color: #FCE4EC; /* Very light pink */
+            border-left: 6px solid #880E4F; /* Stronger pink/maroon border */
             padding: 25px;
             border-radius: 10px;
             margin-top: 30px;
             font-size: 1.1em;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box_shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .result-box h3 {
-            color: #1A237E; /* Deep Blue */
+            color: #880E4F; /* Dark Pink/Maroon */
             margin-top: 0;
             font-weight: 700;
         }
         .stMetric {
-            background-color: #F8F9FA; /* Light background for metric */
+            background-color: #F3E5F5; /* Lighter purple background for metric */
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box_shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             text-align: center;
             margin-top: 20px;
         }
@@ -245,7 +246,7 @@ def main():
         .stMetric > div > div > div:last-child { /* Metric value */
             font-size: 2.5em;
             font-weight: bold;
-            color: #FFC107; /* Amber */
+            color: #AD1457; /* Dark Pink */
         }
         .disclaimer {
             font-size: 0.85em;
@@ -263,7 +264,7 @@ def main():
 
     # --- Header Section ---
     st.markdown('<div class="header-container">', unsafe_allow_html=True)
-    st.markdown('<p class="header-title"> Jivanshu Tax Assistant</p>', unsafe_allow_html=True)
+    st.markdown('<p class="header-title">💰 Jivanshu Tax Assistant</p>', unsafe_allow_html=True)
     st.markdown('<p class="header-subtitle">Calculate your tax for Financial Year 2024-25 (Assessment Year 2025-26)</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -478,7 +479,7 @@ def main():
     if 'results' in st.session_state:
         results = st.session_state['results']
         st.markdown('<div class="result-section">', unsafe_allow_html=True)
-        st.markdown('<h3><center>Your Tax Calculation Summary</center></h3>', unsafe_allow_html=True)
+        st.markdown('<h3><center>✅ Your Tax Calculation Summary</center></h3>', unsafe_allow_html=True)
         
         st.metric(label="Total Tax Payable", value=f"₹{results['total_tax_payable']:,.2f}")
 
@@ -679,4 +680,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
