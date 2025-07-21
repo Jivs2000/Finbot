@@ -289,7 +289,7 @@ def main():
 
     # --- Header Section ---
     st.markdown('<div class="header-container">', unsafe_allow_html=True)
-    st.markdown('<p class="header-title"> TaxSavvy Assistant</p>', unsafe_allow_html=True) 
+    st.markdown('<p class="header-title">💰 TaxSavvy Assistant</p>', unsafe_allow_html=True) 
     st.markdown('<p class="header-subtitle">Your Smart Guide to Indian Income Tax</p>', unsafe_allow_html=True) 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -497,7 +497,7 @@ def main():
         if 'results' in st.session_state:
             results = st.session_state['results']
             st.markdown('<div class="result-section">', unsafe_allow_html=True)
-            st.markdown('<h3><center> Your Tax Calculation Summary</center></h3>', unsafe_allow_html=True)
+            st.markdown('<h3><center>✅ Your Tax Calculation Summary</center></h3>', unsafe_allow_html=True)
             
             st.metric(label="Total Tax Payable", value=f"₹{results['total_tax_payable']:,.2f}")
 
@@ -526,7 +526,7 @@ def main():
     # --- Tab 2: Detailed Old Regime Inputs ---
     with tab2:
         st.markdown('<div class="input-section">', unsafe_allow_html=True)
-        st.markdown('<h2><center> Detailed Income & Deduction Inputs (Old Regime Only)</center></h2>', unsafe_allow_html=True)
+        st.markdown('<h2><center>📝 Detailed Income & Deduction Inputs (Old Regime Only)</center></h2>', unsafe_allow_html=True)
         st.markdown("""
         **This section is primarily relevant for the Old Tax Regime.** If you've chosen the New Tax Regime, most of these deductions and separate income calculations are not applicable.
         """)
