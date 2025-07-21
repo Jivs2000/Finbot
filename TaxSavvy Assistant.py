@@ -153,7 +153,7 @@ def main():
         }
 
         .header-container {
-            background: linear-gradient(to right, #0A2342, #1E4072); /* Deep Navy Blue to Dark Blue Gradient */
+            background-color: #E3F2FD; /* Changed to very light blue */
             padding: 25px 0;
             border-radius: 15px;
             margin-bottom: 2.5em;
@@ -166,7 +166,7 @@ def main():
             color: #000000; /* Changed to Black */
             text-align: center;
             margin-bottom: 0.2em;
-            text-shadow: 2px 2px 6px rgba(255,255,255,0.6); /* Changed shadow to white for contrast */
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.4); /* Changed shadow to dark for contrast */
         }
         .header-subtitle {
             font-size: 1.5em; 
@@ -174,7 +174,7 @@ def main():
             font-weight: 800; /* Made bolder */
             text-align: center;
             margin-bottom: 0;
-            text-shadow: 1px 1px 3px rgba(255,255,255,0.3); /* Changed shadow to white */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Changed shadow to dark for contrast */
         }
         .input-section, .result-section, .info-section { 
             background-color: white;
@@ -461,7 +461,7 @@ def main():
                         if temp_taxable_income_old <= 300000: temp_tax_without_rebate = 0
                         elif temp_taxable_income_old <= 500000: temp_tax_without_rebate = (temp_taxable_income_old - 300000) * 0.05
                         elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (200000 * 0.05) + (temp_taxable_income_old - 500000) * 0.20
-                        else: temp_tax_without_rebate = (200000 * 0.05) + (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
+                    else: temp_tax_without_rebate = (200000 * 0.05) + (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
                     elif age_group == "Above 80 years":
                         if temp_taxable_income_old <= 500000: temp_tax_without_rebate = 0
                         elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (temp_taxable_income_old - 500000) * 0.20
@@ -720,4 +720,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
