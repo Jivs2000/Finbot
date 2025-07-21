@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
 import streamlit as st
 
 # --- Tax Calculation Logic ---
@@ -133,7 +128,7 @@ def calculate_cess(tax_plus_surcharge):
 # --- Streamlit UI ---
 def main():
     # >>> IMPORTANT: st.set_page_config MUST be the very first Streamlit command <<<
-    st.set_page_config(page_title="Jivanshu Tax Assistant", layout="centered") 
+    st.set_page_config(page_title="TaxSavvy Assistant", layout="centered") # Changed page_title
 
     # --- Custom CSS for Eye-Catching GUI ---
     st.markdown(
@@ -143,110 +138,110 @@ def main():
 
         html, body, [class*="st-"] {
             font-family: 'Inter', sans-serif;
-            color: #000000; /* Changed to Black */
-            font-weight: normal; /* Ensure general text is not forced bold unless specified */
+            color: #212121; /* Dark gray for general text */
+            font-weight: normal; 
         }
 
         .stApp {
-            background: linear-gradient(to bottom right, #FCE4EC, #E1BEE7); /* Light Pink to Light Purple Gradient */
+            background: linear-gradient(to bottom right, #F5F7FA, #E6E9ED); /* Very light gray/blue gradient */
         }
 
         .header-container {
-            background: linear-gradient(to right, #880E4F, #AD1457); /* Darker Pink/Maroon Gradient */
-            padding: 20px 0;
+            background: linear-gradient(to right, #0A2342, #1E4072); /* Deep Navy Blue to Dark Blue Gradient */
+            padding: 25px 0;
             border-radius: 15px;
-            margin-bottom: 2em;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2.5em;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
             text-align: center;
         }
         .header-title {
-            font-size: 3.5em;
+            font-size: 3.8em; /* Slightly larger */
             font-weight: bold;
-            color: white; /* White text for contrast */
+            color: white; 
             text-align: center;
             margin-bottom: 0.2em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
         }
         .header-subtitle {
-            font-size: 1.4em;
-            color: #F8BBD0; /* Lighter pink for subtitle */
+            font-size: 1.5em; /* Slightly larger */
+            color: #E0E7EB; /* Lighter gray-blue for subtitle */
             text-align: center;
             margin-bottom: 0;
         }
-        .input-section, .result-section, .info-section { /* Added .info-section */
+        .input-section, .result-section, .info-section { 
             background-color: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
         .stNumberInput > div > div > input {
             border-radius: 10px;
             padding: 10px 15px;
-            border: 1px solid #F48FB1; /* Pink border */
-            box-shadow: inset 2px 2px 5px #F06292, inset -5px -5px 10px #FFFFFF;
+            border: 1px solid #B0BEC5; /* Light gray-blue border */
+            box-shadow: inset 2px 2px 5px #90A4AE, inset -5px -5px 10px #F5F7FA; /* Neumorphic effect */
         }
         .stRadio > label {
-            font-weight: 600; /* Semi-bold */
-            color: #000000; /* Changed to Black */
+            font-weight: 600; 
+            color: #212121; 
             font-size: 1.1em;
         }
         .stRadio div[role="radiogroup"] {
             display: flex;
-            flex-direction: row; /* Arrange radio buttons horizontally */
-            gap: 30px; /* Space between radio buttons */
+            flex-direction: row; 
+            gap: 30px; 
             justify-content: center;
             margin-bottom: 20px;
         }
         .stButton button {
-            border-radius: 25px; /* More rounded */
-            padding: 12px 25px;
-            background: linear-gradient(to right, #880E4F, #AD1457); /* Match header button gradient */
+            border-radius: 28px; /* More rounded */
+            padding: 14px 30px; /* Larger padding */
+            background: linear-gradient(to right, #0A2342, #2A60A0); /* Deep Blue to Medium Blue Gradient */
             color: white;
             border: none;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1.2em; /* Larger font */
             display: block;
             margin: 25px auto;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Button shadow */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); /* Stronger shadow */
             transition: all 0.3s ease;
         }
         .stButton button:hover {
-            background: linear-gradient(to right, #5C002B, #7B1FA2); /* Darker gradient on hover, transitioning to purple */
-            transform: translateY(-2px); /* Slight lift effect */
-            box_shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #071A33, #1A4D8A); /* Darker gradient on hover */
+            transform: translateY(-3px); /* More pronounced lift effect */
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
         }
         .result-box {
-            background-color: #FCE4EC; /* Very light pink */
-            border-left: 6px solid #880E4F; /* Stronger pink/maroon border */
+            background-color: #E3F2FD; /* Very light blue */
+            border-left: 6px solid #0A2342; /* Stronger deep blue border */
             padding: 25px;
             border-radius: 10px;
             margin-top: 30px;
             font-size: 1.1em;
-            box_shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .result-box h3 {
-            color: #880E4F; /* Dark Pink/Maroon */
+            color: #0A2342; /* Deep Navy Blue */
             margin-top: 0;
             font-weight: 700;
         }
         .stMetric {
-            background-color: #F3E5F5; /* Lighter purple background for metric */
+            background-color: #E0F2F7; /* Lighter blue background for metric */
             border-radius: 10px;
             padding: 20px;
-            box_shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             text-align: center;
             margin-top: 20px;
         }
         .stMetric > div > div > div:first-child { /* Metric label */
             font-size: 1.2em;
-            color: #566573;
+            color: #546E7A; /* Darker gray-blue */
             font-weight: 600;
         }
         .stMetric > div > div > div:last-child { /* Metric value */
-            font-size: 2.5em;
+            font-size: 2.8em; /* Larger value font */
             font-weight: bold;
-            color: #AD1457; /* Dark Pink */
+            color: #0A2342; /* Deep Navy Blue */
         }
         .disclaimer {
             font-size: 0.85em;
@@ -264,8 +259,8 @@ def main():
 
     # --- Header Section ---
     st.markdown('<div class="header-container">', unsafe_allow_html=True)
-    st.markdown('<p class="header-title">💰 Jivanshu Tax Assistant</p>', unsafe_allow_html=True)
-    st.markdown('<p class="header-subtitle">Calculate your tax for Financial Year 2024-25 (Assessment Year 2025-26)</p>', unsafe_allow_html=True)
+    st.markdown('<p class="header-title">💰 TaxSavvy Assistant</p>', unsafe_allow_html=True) # Changed header_title
+    st.markdown('<p class="header-subtitle">Your Smart Guide to Indian Income Tax</p>', unsafe_allow_html=True) # Changed subtitle
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.write("---") # Visual separator
@@ -305,25 +300,72 @@ def main():
                 key="age_group_radio"
             )
             
+            # --- Detailed Income Sources for Old Regime ---
             st.subheader("Other Income Sources (Old Regime)")
             st.markdown("*(Enter amounts for applicable income sources)*")
-            other_income_sources['house_property'] = st.number_input(
-                "Income from House Property (Rent Received - Expenses) (₹)",
-                min_value=0, value=0, step=1000, format="%d", key="income_hp_input"
-            )
-            other_income_sources['capital_gains_long_term'] = st.number_input(
-                "Long Term Capital Gains (LTCG) (₹)",
-                min_value=0, value=0, step=1000, format="%d", key="income_ltcg_input"
-            )
-            other_income_sources['capital_gains_short_term'] = st.number_input(
-                "Short Term Capital Gains (STCG) (₹)",
-                min_value=0, value=0, step=1000, format="%d", key="income_stcg_input"
-            )
-            other_income_sources['other_sources'] = st.number_input(
-                "Income from Other Sources (Interest, Dividends, etc.) (₹)",
-                min_value=0, value=0, step=1000, format="%d", key="income_os_input"
-            )
+            with st.expander("Income from House Property"):
+                hp_income = st.number_input(
+                    "Gross Rental Income (₹)",
+                    min_value=0, value=0, step=1000, format="%d", key="hp_gross_rent"
+                )
+                hp_municipal_tax = st.number_input(
+                    "Municipal Taxes Paid (₹)",
+                    min_value=0, value=0, step=1000, format="%d", key="hp_municipal_tax"
+                )
+                # Net Annual Value (NAV) = Gross Rental Income - Municipal Taxes
+                nav = max(0, hp_income - hp_municipal_tax)
+                st.write(f"Net Annual Value (NAV): ₹{nav:,.2f}")
+                
+                # Standard Deduction on HP Income (30% of NAV)
+                hp_standard_deduction = nav * 0.30
+                st.write(f"Standard Deduction (30% of NAV): ₹{hp_standard_deduction:,.2f}")
+
+                hp_interest_loan = st.number_input(
+                    "Interest on Home Loan for House Property (₹)",
+                    min_value=0, value=0, step=1000, format="%d", key="hp_interest_loan_input"
+                )
+                
+                # This is a simplified calculation for display.
+                # Actual HP income calculation is more detailed.
+                income_from_hp_calc = nav - hp_standard_deduction - hp_interest_loan
+                other_income_sources['house_property'] = income_from_hp_calc # Store for total GTI
+                st.info(f"Calculated Income from House Property (simplified): ₹{income_from_hp_calc:,.2f}")
+                st.markdown("*(Note: Home loan interest deduction is also separately available under Section 24(b) in the deductions section below, up to ₹2,00,000 for self-occupied property.)*")
+
+            with st.expander("Capital Gains (LTCG/STCG)"):
+                other_income_sources['capital_gains_long_term'] = st.number_input(
+                    "Long Term Capital Gains (LTCG) (₹)",
+                    min_value=0, value=0, step=1000, format="%d", key="income_ltcg_input"
+                )
+                other_income_sources['capital_gains_short_term'] = st.number_input(
+                    "Short Term Capital Gains (STCG) (₹)",
+                    min_value=0, value=0, step=1000, format="%d", key="income_stcg_input"
+                )
+                st.markdown("*(Taxation of capital gains is complex and depends on asset type, holding period, and specific sections. This calculator only takes the amount as input.)*")
+
+            with st.expander("Profits and Gains from Business or Profession (PGBP)"):
+                other_income_sources['pnbp_income'] = st.number_input(
+                    "Net Income from Business/Profession (₹)",
+                    min_value=0, value=0, step=1000, format="%d", key="pnbp_input"
+                )
+                st.markdown("*(This is a highly complex head. Please enter your net taxable income after all applicable business expenses and depreciation.)*")
+
+            with st.expander("Income from Other Sources"):
+                other_income_sources['interest_income'] = st.number_input(
+                    "Interest Income (Savings, FDs, etc.) (₹)",
+                    min_value=0, value=0, step=1000, format="%d", key="interest_income_input"
+                )
+                other_income_sources['dividend_income'] = st.number_input(
+                    "Dividend Income (₹)",
+                    min_value=0, value=0, step=1000, format="%d", key="dividend_income_input"
+                )
+                other_income_sources['casual_income'] = st.number_input(
+                    "Casual Income (Lottery, Gambling, etc.) (₹)",
+                    min_value=0, value=0, step=1000, format="%d", key="casual_income_input"
+                )
+                st.markdown("*(Note: Casual income is taxed at a flat 30% without deductions.)*")
             
+            # --- Detailed Deductions & Exemptions for Old Regime ---
             st.subheader("Detailed Deductions & Exemptions (Old Regime)")
             st.markdown("*(Enter amounts for applicable deductions. Max limits apply.)*")
 
@@ -360,20 +402,39 @@ def main():
                     "Deduction u/s 80TTB (Senior Citizen Savings/FD Interest - Max ₹50,000)",
                     min_value=0, max_value=50000, value=0, step=1000, format="%d", key="deduction_80ttb_input"
                 )
+            
+            # --- Exemptions (for display/info, generally reduce Gross Salary before input) ---
+            st.subheader("Exemptions (for info - typically reduce Gross Salary)")
+            st.markdown("*(These are usually excluded from Gross Salary before tax calculation. Ensure your 'Gross Salary Income' input reflects this if applicable.)*")
+            st.number_input(
+                "HRA Exemption (as per rules) (₹)",
+                min_value=0, value=0, step=1000, format="%d", key="hra_exemption_info"
+            )
+            st.number_input(
+                "LTA Exemption (as per rules) (₹)",
+                min_value=0, value=0, step=1000, format="%d", key="lta_exemption_info"
+            )
+
 
         st.markdown('</div>', unsafe_allow_html=True) # Close input-section div
 
-    # Calculate Gross Total Income based on regime
-    # For New Regime, we assume annual_income is already GTI
-    # For Old Regime, we sum up the specific income sources
+    # Calculate Gross Total Income based on regime and inputs
+    # For New Regime, we assume gross_salary is the primary income, and other income sources are added.
+    # For Old Regime, we sum up the specific income sources from detailed inputs.
     if tax_regime == "Old Tax Regime":
+        # Sum all specific income sources entered for Old Regime
         total_gross_income = gross_salary + \
                              other_income_sources.get('house_property', 0) + \
                              other_income_sources.get('capital_gains_long_term', 0) + \
                              other_income_sources.get('capital_gains_short_term', 0) + \
-                             other_income_sources.get('other_sources', 0)
+                             other_income_sources.get('pnbp_income', 0) + \
+                             other_income_sources.get('interest_income', 0) + \
+                             other_income_sources.get('dividend_income', 0) + \
+                             other_income_sources.get('casual_income', 0)
     else:
-        total_gross_income = gross_salary # For new regime, we stick to the initial single input for simplicity
+        # For New Regime, we assume the initial 'Gross Salary Income' is effectively the Gross Total Income
+        # and other income sources are not separately detailed for calculation simplicity.
+        total_gross_income = gross_salary 
 
     col1, col2 = st.columns(2)
     with col1:
@@ -471,7 +532,7 @@ def main():
         if st.button("Reset", key="reset_button"):
             # Clear session state and rerun to reset inputs
             for key in st.session_state.keys():
-                if key.endswith("_input") or key.endswith("_radio") or key == 'results':
+                if key.endswith("_input") or key.endswith("_radio") or key == 'results' or key.endswith("_info"):
                     del st.session_state[key]
             st.rerun()
 
