@@ -157,17 +157,18 @@ def main():
         .header-title {
             font-size: 3.8em; 
             font-weight: 800; /* Made bolder */
-            color: white; 
+            color: #000000; /* Changed to Black */
             text-align: center;
             margin-bottom: 0.2em;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.6); /* Increased shadow for better pop */
+            text-shadow: 2px 2px 6px rgba(255,255,255,0.6); /* Changed shadow to white for contrast */
         }
         .header-subtitle {
             font-size: 1.5em; 
-            color: white; /* Changed to white for maximum contrast */
+            color: #000000; /* Changed to Black */
+            font-weight: 800; /* Made bolder */
             text-align: center;
             margin-bottom: 0;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3); /* Added subtle shadow */
+            text-shadow: 1px 1px 3px rgba(255,255,255,0.3); /* Changed shadow to white */
         }
         .input-section, .result-section, .info-section { 
             background-color: white;
@@ -288,7 +289,7 @@ def main():
 
     # --- Header Section ---
     st.markdown('<div class="header-container">', unsafe_allow_html=True)
-    st.markdown('<p class="header-title">💰 TaxSavvy Assistant</p>', unsafe_allow_html=True) 
+    st.markdown('<p class="header-title"> TaxSavvy Assistant</p>', unsafe_allow_html=True) 
     st.markdown('<p class="header-subtitle">Your Smart Guide to Indian Income Tax</p>', unsafe_allow_html=True) 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -454,7 +455,7 @@ def main():
                         if temp_taxable_income_old <= 300000: temp_tax_without_rebate = 0
                         elif temp_taxable_income_old <= 500000: temp_tax_without_rebate = (temp_taxable_income_old - 300000) * 0.05
                         elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (200000 * 0.05) + (temp_taxable_income_old - 500000) * 0.20
-                        else: temp_tax_without_rebate = (200000 * 0.05) + (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
+                    else: temp_tax_without_rebate = (200000 * 0.05) + (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
                     elif age_group == "Above 80 years":
                         if temp_taxable_income_old <= 500000: temp_tax_without_rebate = 0
                         elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (temp_taxable_income_old - 500000) * 0.20
@@ -496,7 +497,7 @@ def main():
         if 'results' in st.session_state:
             results = st.session_state['results']
             st.markdown('<div class="result-section">', unsafe_allow_html=True)
-            st.markdown('<h3><center>✅ Your Tax Calculation Summary</center></h3>', unsafe_allow_html=True)
+            st.markdown('<h3><center> Your Tax Calculation Summary</center></h3>', unsafe_allow_html=True)
             
             st.metric(label="Total Tax Payable", value=f"₹{results['total_tax_payable']:,.2f}")
 
@@ -525,7 +526,7 @@ def main():
     # --- Tab 2: Detailed Old Regime Inputs ---
     with tab2:
         st.markdown('<div class="input-section">', unsafe_allow_html=True)
-        st.markdown('<h2><center>📝 Detailed Income & Deduction Inputs (Old Regime Only)</center></h2>', unsafe_allow_html=True)
+        st.markdown('<h2><center> Detailed Income & Deduction Inputs (Old Regime Only)</center></h2>', unsafe_allow_html=True)
         st.markdown("""
         **This section is primarily relevant for the Old Tax Regime.** If you've chosen the New Tax Regime, most of these deductions and separate income calculations are not applicable.
         """)
