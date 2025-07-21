@@ -462,7 +462,7 @@ def main():
                         elif temp_taxable_income_old <= 500000: temp_tax_without_rebate = (temp_taxable_income_old - 300000) * 0.05
                         elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (200000 * 0.05) + (temp_taxable_income_old - 500000) * 0.20
                     else: temp_tax_without_rebate = (200000 * 0.05) + (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
-                    elif age_group == "Above 80 years":
+                        elif age_group == "Above 80 years":
                         if temp_taxable_income_old <= 500000: temp_tax_without_rebate = 0
                         elif temp_taxable_income_old <= 1000000: temp_tax_without_rebate = (temp_taxable_income_old - 500000) * 0.20
                         else: temp_tax_without_rebate = (500000 * 0.20) + (temp_taxable_income_old - 1000000) * 0.30
