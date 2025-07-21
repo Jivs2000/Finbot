@@ -134,7 +134,7 @@ def main():
     st.markdown(
         """
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap'); /* Added 800 weight */
 
         html, body, [class*="st-"] {
             font-family: 'Inter', sans-serif;
@@ -155,18 +155,19 @@ def main():
             text-align: center;
         }
         .header-title {
-            font-size: 3.8em; /* Slightly larger */
-            font-weight: bold;
+            font-size: 3.8em; 
+            font-weight: 800; /* Made bolder */
             color: white; 
             text-align: center;
             margin-bottom: 0.2em;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6); /* Increased shadow for better pop */
         }
         .header-subtitle {
-            font-size: 1.5em; /* Slightly larger */
-            color: #E0E7EB; /* Lighter gray-blue for subtitle */
+            font-size: 1.5em; 
+            color: white; /* Changed to white for maximum contrast */
             text-align: center;
             margin-bottom: 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3); /* Added subtle shadow */
         }
         .input-section, .result-section, .info-section { 
             background-color: white;
@@ -194,26 +195,26 @@ def main():
             margin-bottom: 20px;
         }
         .stButton button {
-            border-radius: 28px; /* More rounded */
-            padding: 14px 30px; /* Larger padding */
-            background: linear-gradient(to right, #0A2342, #2A60A0); /* Deep Blue to Medium Blue Gradient */
+            border-radius: 28px; 
+            padding: 14px 30px; 
+            background: linear-gradient(to right, #0A2342, #2A60A0); 
             color: white;
             border: none;
             font-weight: bold;
-            font-size: 1.2em; /* Larger font */
+            font-size: 1.2em; 
             display: block;
             margin: 25px auto;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); /* Stronger shadow */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); 
             transition: all 0.3s ease;
         }
         .stButton button:hover {
-            background: linear-gradient(to right, #071A33, #1A4D8A); /* Darker gradient on hover */
-            transform: translateY(-3px); /* More pronounced lift effect */
+            background: linear-gradient(to right, #071A33, #1A4D8A); 
+            transform: translateY(-3px); 
             box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
         }
         .result-box {
-            background-color: #E3F2FD; /* Very light blue */
-            border-left: 6px solid #0A2342; /* Stronger deep blue border */
+            background-color: #E3F2FD; 
+            border-left: 6px solid #0A2342; 
             padding: 25px;
             border-radius: 10px;
             margin-top: 30px;
@@ -221,27 +222,27 @@ def main():
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .result-box h3 {
-            color: #0A2342; /* Deep Navy Blue */
+            color: #0A2342; 
             margin-top: 0;
             font-weight: 700;
         }
         .stMetric {
-            background-color: #E0F2F7; /* Lighter blue background for metric */
+            background-color: #E0F2F7; 
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             text-align: center;
             margin-top: 20px;
         }
-        .stMetric > div > div > div:first-child { /* Metric label */
+        .stMetric > div > div > div:first-child { 
             font-size: 1.2em;
-            color: #546E7A; /* Darker gray-blue */
+            color: #546E7A; 
             font-weight: 600;
         }
-        .stMetric > div > div > div:last-child { /* Metric value */
-            font-size: 2.8em; /* Larger value font */
+        .stMetric > div > div > div:last-child { 
+            font-size: 2.8em; 
             font-weight: bold;
-            color: #0A2342; /* Deep Navy Blue */
+            color: #0A2342; 
         }
         .disclaimer {
             font-size: 0.85em;
